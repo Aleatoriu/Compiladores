@@ -1,4 +1,4 @@
-public enum TokenType {
+public enum TokenType { //aqui é o enum que representa os tipos de tokens que o lexer reconhece
     PCDec, PCProg, PCInt, PCReal, PCLer,
     PCImprimir, PCSe, PCEntao, PCEnqto, PCIni, PCFim,
     OpAritMult, OpAritDiv, OpAritSoma, OpAritSub, OpRelMenor, OpRelMenorIgual,

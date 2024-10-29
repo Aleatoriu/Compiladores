@@ -1,5 +1,5 @@
 
-public class Token {
+public class Token {  //aqui é a classe token que é a classe que representa os tokens que são retornados pelo lexer pra nao ficar bagunçado
     public TokenType type;
     public String lexeme;
     public int line;

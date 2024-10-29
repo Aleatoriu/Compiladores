@@ -1,13 +1,13 @@
 import java.util.ArrayList;
 import java.util.List;
 //se eu tivesse feito em python tava melhor essa merda de java de bosta essas funcao fica BUGANDO NESSA MERDA
-public class LexerGym {
+public class LexerGyh {
     public ArchiveReader reader;
     public String currentLine;
     public int currentLineNumber;
     public int currentPosition;
 
-    public LexerGym(String arqName) {
+    public LexerGyh(String arqName) {
         this.reader = new ArchiveReader(arqName);
         this.currentLine = reader.readNextLine();
         this.currentLineNumber = 1;
@@ -20,10 +20,10 @@ public class LexerGym {
             while (currentPosition < currentLine.length()) { //esse aqui já percorre os caracteres de cada linha
                 char currentChar = currentLine.charAt(currentPosition); // define o caractere atual
                 switch (currentChar) { //inicia a verificação do caractere atual pra definir o token
-                    case ' ':
+                    case ' ':  //se for espaço, pula
                         currentPosition++;
                         break;
-                    case '+':
+                    case '+': //se for um operador aritmetico, adiciona o token correspondente
                         tokens.add(new Token(TokenType.OpAritSoma, "+", currentLineNumber));
                         currentPosition++;
                         break;
@@ -47,7 +47,7 @@ public class LexerGym {
                         tokens.add(new Token(TokenType.FechaPar, ")", currentLineNumber));
                         currentPosition++;
                         break;
-                    case ':':
+                    case ':':  //se for ':' verifica se é ':=' ou apenas ':'
                         if (currentPosition + 1 < currentLine.length() && currentLine.charAt(currentPosition + 1) == '=') {
                             tokens.add(new Token(TokenType.Atrib, ":=", currentLineNumber));
                             currentPosition += 2;
@@ -56,7 +56,7 @@ public class LexerGym {
                             currentPosition++;
                         }
                         break;
-                    case '<':
+                    case '<': //se for um operador relacional, verifica se é '<', '<=', '==', ou '!='
                         if (currentPosition + 1 < currentLine.length() && currentLine.charAt(currentPosition + 1) == '=') {
                             tokens.add(new Token(TokenType.OpRelMenorIgual, "<=", currentLineNumber));
                             currentPosition += 2;
@@ -79,6 +79,9 @@ public class LexerGym {
                             tokens.add(new Token(TokenType.OpRelIgual, "==", currentLineNumber));
                             currentPosition += 2;
                         } else {
+                            for (Token token : tokens) {
+                                System.out.println(token);
+                            }
                             throw LexerEceptions.invalidCharacter(currentChar,currentLineNumber);
                         }
                         break;
@@ -87,10 +90,13 @@ public class LexerGym {
                             tokens.add(new Token(TokenType.OpRelDif, "!=", currentLineNumber));
                             currentPosition += 2;
                         } else {
+                            for (Token token : tokens) {
+                                System.out.println(token);
+                            }
                             throw LexerEceptions.invalidCharacter(currentChar, currentLineNumber);
                         }
                         break;
-                    case '"':
+                    case '"':  //se for aspas, verifica se é uma cadeia de caracteres
                         int start = currentPosition;
                         currentPosition++;
                         while (currentPosition < currentLine.length() && currentLine.charAt(currentPosition) != '"') {
@@ -101,10 +107,13 @@ public class LexerGym {
                             tokens.add(new Token(TokenType.Cadeia, strValue, currentLineNumber));
                             currentPosition++;
                         } else {
+                            for (Token token : tokens) {
+                                System.out.println(token);
+                            }
                             throw LexerEceptions.invalidToken(currentLine.substring(start), currentLineNumber);
                         }
                         break;
-                    case '#':
+                    case '#':  //se for '#' ignora o resto da linha pq é o comentario
                         currentPosition = currentLine.length();
                         break;
                     default:  // deixei o default para os casos de números e identificadores pq se colocar ali em cima fica muito grande fazer as verificoes e aqui fica mais limpo nessa merda
@@ -122,7 +131,7 @@ public class LexerGym {
                             } else {
                                 tokens.add(new Token(TokenType.NumInt, currentLine.substring(start, currentPosition), currentLineNumber));
                             }
-                        } else if (Character.isLetter(currentChar)) {
+                        } else if (Character.isLetter(currentChar)) {   //se for letra, verifica se é uma palavra reservada ou um identificador
                             start = currentPosition;
                             while (currentPosition < currentLine.length() && (Character.isLetterOrDigit(currentLine.charAt(currentPosition)) || currentLine.charAt(currentPosition) == '_')) {
                                 currentPosition++;
@@ -169,8 +178,11 @@ public class LexerGym {
                                     tokens.add(new Token(TokenType.OpBoolE, lexeme, currentLineNumber));
                                     break;
 
-                                default:
+                                default: // se nao for nenhuma palavra reservada é um identificador
                                     if(Character.isUpperCase(lexeme.charAt(0))){
+                                        for (Token token : tokens) {
+                                            System.out.println(token);
+                                        }
                                         throw LexerEceptions.invalidKeyword(lexeme, currentLineNumber);
                                     }else{
                                     tokens.add(new Token(TokenType.Var, lexeme, currentLineNumber));
@@ -179,6 +191,9 @@ public class LexerGym {
                             }
                         break;
                         } else {
+                            for (Token token : tokens) {
+                                System.out.println(token);
+                            }
                             throw new LexerEceptions("Erro léxico na linha " + currentLineNumber + ": " + currentChar); //tratamento de erro generico pq to com preguiça de fazer um pra cada caractere
                         }// se nao ia virar um if else do tamanho da minha cabeça e mo pregs
                 }
