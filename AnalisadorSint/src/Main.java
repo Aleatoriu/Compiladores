@@ -9,6 +9,7 @@ public class Main {
         LexerGyh lex = new LexerGyh(fileName);
         List<Token> tokens = lex.nextToken();
         SintGyh sint = new SintGyh(tokens);
-
+        sint.printType();
+        sint.Programa();
     }
 }

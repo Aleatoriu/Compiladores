@@ -159,6 +159,9 @@ public class LexerGyh {
                                 case "SE":
                                     tokens.add(new Token(TokenType.PCSe, lexeme, currentLineNumber));
                                     break;
+                                case "SENAO":
+                                    tokens.add(new Token(TokenType.PCSenao, lexeme, currentLineNumber));
+                                    break;
                                 case "ENTAO":
                                     tokens.add(new Token(TokenType.PCEntao, lexeme, currentLineNumber));
                                     break;

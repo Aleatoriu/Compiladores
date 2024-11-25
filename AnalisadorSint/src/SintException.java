@@ -3,23 +3,15 @@ public class SintException extends RuntimeException {
         super(message);
     }
 
+    public static SintException endOfFileExpected(TokenType type) {
+        return new SintException("Fim do aquivo esperado, mas encontrou: " + type);
+    }
+
+    public static SintException expectedToken(TokenType expected, Token actual) {
+        return new SintException("Token esperado: " + expected + ", Inesperado encontrado: " + actual.getType());
+    }
+
     public static SintException unexpectedToken(Token token) {
-        return new SintException("Erro sintático: token inesperado '" + token.getLexeme() +
-                "' na linha " + token.getLineNumber());
-    }
-
-    public static SintException expectedToken(TokenType expectedType, Token foundToken) {
-        if (foundToken == null) {
-            return new SintException("Erro sintático: esperado '" + expectedType +
-                    "', mas fim do arquivo encontrado.");
-        } else {
-            return new SintException("Erro sintático: esperado '" + expectedType +
-                    "', mas encontrado '" + foundToken.getLexeme() +
-                    "' na linha " + foundToken.getLineNumber());
-        }
-    }
-
-    public static SintException unexpectedEOF() {
-        return new SintException("Erro sintático: fim do arquivo inesperado.");
+        return new SintException("Token inesperado: " + token.getType());
     }
 }
