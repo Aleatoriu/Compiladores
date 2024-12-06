@@ -1,4 +1,4 @@
-public class SintException extends RuntimeException {
+public class SintException extends RuntimeException {  //exceptions especificas para o sintatico, a depender do caso lanca a forma de exceção informando inesperado ou esperado.
     public SintException(String message) {
         super(message);
     }

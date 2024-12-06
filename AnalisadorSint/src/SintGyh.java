@@ -13,50 +13,36 @@ public class SintGyh {
         for(int i = 0; i < tokens.size(); i++){
             System.out.println(tokens.get(i) + " ");
         }
-    }
+    } //funcao para testes, esqueci como q tava vindo do lexer
 
-    public void printLexeme(){
-        for(int i = 0; i < tokens.size(); i++){
-            System.out.println(tokens.get(i).getLexeme());
-        }
-    }
+    public void startSint(){
+        Programa();
+    } //incia o sintatico
 
-    public void printLine(){
-        for(int i = 0; i < tokens.size(); i++){
-            System.out.println(tokens.get(i).getLineNumber());
-        }
-    }
-
-    public void printType(){
-        for(int i = 0; i < tokens.size(); i++){
-            System.out.println(tokens.get(i).getType());
-        }
-    }
-
-    public boolean match(TokenType type) {
-        if (index < tokens.size() && tokens.get(index).getType() == type) {
+    public boolean match(TokenType type) { //funcao para comparar o token atual com o token esperado pra nao ficar uma bagunça no codigo cheio de if else
+        if (index < tokens.size() && tokens.get(index).getType() == type) { //verifica se o index é menor que o tamanho da lista de tokens e se o token atual é igual ao token esperado
             index++;
-            return true;
-        } else if (index >= tokens.size()) {
-            throw SintException.endOfFileExpected(type);
+            return true; //caso seja, incrementa o index e retorna true
+        } else if (index >= tokens.size()) { //caso o index seja maior ou igual ao tamanho da lista de tokens
+            throw SintException.endOfFileExpected(type); //lança uma exceção
         } else {
-            throw SintException.expectedToken(type, tokens.get(index));
+            throw SintException.expectedToken(type, tokens.get(index)); //caso o token atual nao seja igual ao token esperado, lança uma exceção
         }
     }
 
     //Programa → ':' 'DEC' ListaDeclaracoes ':' 'PROG' ListaComandos;
-    public void Programa() {
-        if (index >= tokens.size() || !match(TokenType.Delim)) {
-            throw SintException.expectedToken(TokenType.Delim, tokens.get(index));
+    public void Programa() {  //funcao que chama as outras funcoes para fazer a verificacao do programa
+        if (index >= tokens.size() || !match(TokenType.Delim)) { //verifica se o token atual é Delim
+            throw SintException.expectedToken(TokenType.Delim, tokens.get(index)); //caso nao seja, lança uma exceção
         }
-        if (!match(TokenType.PCDec)) {
-            throw SintException.unexpectedToken(tokens.get(index));
+        if (!match(TokenType.PCDec)) { //verifica se o token atual é PCDec
+            throw SintException.unexpectedToken(tokens.get(index)); //
         }
         ListaDeclaracoes();
-        if (!match(TokenType.Delim)) {
+        if (!match(TokenType.Delim)) { //verifica se o token atual é Delim
             throw SintException.expectedToken(TokenType.Delim, tokens.get(index));
         }
-        if (!match(TokenType.PCProg)) {
+        if (!match(TokenType.PCProg)) { //verifica se o token atual é PCProg
             throw SintException.unexpectedToken(tokens.get(index));
         }
         ListaComandos();
@@ -65,24 +51,24 @@ public class SintGyh {
     //*ListaDeclaracoes → Declaracao ListaDec;
     //ListDec  → Declaracao ListDec | E
 
-    public void ListaDeclaracoes(){
+    public void ListaDeclaracoes(){  //funcao que chama a declaracao e a lista de declaracoes
         Declaracao();
         ListaDec();
     }
 
-    public void ListaDec(){
-        if(tokens.get(index).getType() == TokenType.Var){
+    public void ListaDec(){ //funcao que verifica se tem mais declaracoes e evita os b.o de loop
+        if(tokens.get(index).getType() == TokenType.Var){ //verifica se o token atual é Var
             Declaracao();
             ListaDec();
         }
     }
 
     //Declaracao → VARIAVEL ':' TipoVar;
-    public void Declaracao(){
-        if(!match(TokenType.Var)) {
+    public void Declaracao(){  //funcao que verifica se a declaracao esta correta
+        if(!match(TokenType.Var)) { //verifica se o token atual é Var
             throw SintException.unexpectedToken(tokens.get(index));
         }
-        if(!match(TokenType.Delim)){
+        if(!match(TokenType.Delim)){ //verifica se o token atual é Delim
             throw SintException.expectedToken(TokenType.Delim, tokens.get(index));
         }
         TipoVar();
@@ -90,19 +76,19 @@ public class SintGyh {
 
 
     //TipoVar → 'INT' | 'REAL';
-    public void TipoVar() {
-        if (tokens.get(index).getType() == TokenType.PCInt) {
+    public void TipoVar() { //funcao que verifica se o tipo da variavel esta correto
+        if (tokens.get(index).getType() == TokenType.PCInt) { //verifica se o token atual é PCInt
             match(TokenType.PCInt);
-        } else if (tokens.get(index).getType() == TokenType.PCReal) {
+        } else if (tokens.get(index).getType() == TokenType.PCReal) { //verifica se o token atual é PCReal
             match(TokenType.PCReal);
-        } else {
+        } else { //caso nao seja nenhum dos dois, lança uma exceção
             throw SintException.unexpectedToken(tokens.get(index));
         }
     }
 
 
     //ExpressaoAritmetica → TermoAritmetico ExpressaoAritmeticaCont;
-    public void ExpressaoAritmetica(){
+    public void ExpressaoAritmetica(){ //funcao que chama o termo aritmetico e a expressao aritmetica cont
         TermoAritmetico();
         ExpressaoAritmeticaCont();
     }
@@ -111,12 +97,12 @@ public class SintGyh {
     //| '-' TermoAritmetico ExpressaoAritmeticaCont
     //| ε;
 
-    public void ExpressaoAritmeticaCont(){
-        if(tokens.get(index).getType() == TokenType.OpAritSoma){
+    public void ExpressaoAritmeticaCont(){  //funcao que verifica se tem mais expressoes aritmeticas e evita os b.o de loop
+        if(tokens.get(index).getType() == TokenType.OpAritSoma){ //verifica se o token atual é OpAritSoma
             match(TokenType.OpAritSoma);
             TermoAritmetico();
             ExpressaoAritmeticaCont();
-        }else if(tokens.get(index).getType() == TokenType.OpAritSub){
+        }else if(tokens.get(index).getType() == TokenType.OpAritSub){ //verifica se o token atual é OpAritSub
             match(TokenType.OpAritSub);
             TermoAritmetico();
             ExpressaoAritmeticaCont();
@@ -124,7 +110,7 @@ public class SintGyh {
     }
 
     //TermoAritmetico → FatorAritmetico TermoAritmeticoCont;
-    public void TermoAritmetico(){
+    public void TermoAritmetico(){ //funcao que chama o fator aritmetico e o termo aritmetico cont
         FatorAritmetico();
         TermoAritmeticoCont();
     }
@@ -133,12 +119,12 @@ public class SintGyh {
     //| '/' FatorAritmetico TermoAritmeticoCont
     //| ε;
 
-    public void TermoAritmeticoCont(){
-        if(tokens.get(index).getType() == TokenType.OpAritMult){
+    public void TermoAritmeticoCont(){ //funcao que verifica se tem mais termos aritmeticos e evita os b.o de loop
+        if(tokens.get(index).getType() == TokenType.OpAritMult){ //verifica se o token atual é OpAritMult
             match(TokenType.OpAritMult);
             FatorAritmetico();
             TermoAritmeticoCont();
-        }else if(tokens.get(index).getType() == TokenType.OpAritDiv){
+        }else if(tokens.get(index).getType() == TokenType.OpAritDiv){ //verifica se o token atual é OpAritDiv
             match(TokenType.OpAritDiv);
             FatorAritmetico();
             TermoAritmeticoCont();
@@ -146,8 +132,8 @@ public class SintGyh {
     }
 
     //FatorAritmetico → NUMINT| NUMREAL | VARIAVEL | '(' ExpressaoAritmetica ')';
-    public void FatorAritmetico(){
-        switch (tokens.get(index).getType()){
+    public void FatorAritmetico(){  //funcao que verifica se o fator aritmetico esta correto
+        switch (tokens.get(index).getType()){ //verifica o tipo do token atual
             case NumInt:
                 match(TokenType.NumInt);
                 break;
@@ -163,19 +149,19 @@ public class SintGyh {
                 match(TokenType.FechaPar);
                 break;
             default:
-                throw SintException.unexpectedToken(tokens.get(index));
+                throw SintException.unexpectedToken(tokens.get(index)); //caso nao seja nenhum dos tipos acima, lança uma exceção
         }
     }
 
     //ExpressaoRelacional → TermoRelacional ExpressaoRelacionalCont;
-    public void ExpressaoRelacional(){
+    public void ExpressaoRelacional(){ //funcao que chama o termo relacional e a expressao relacional cont
         TermoRelacional();
         ExpressaoRelacionalCont();
     }
     //*ExpressaoRelacionalCont → OperadorBooleano TermoRelacional ExpressaoRelacionalCont
     //| ε;
 
-    public void ExpressaoRelacionalCont(){
+    public void ExpressaoRelacionalCont(){ //funcao que verifica se tem mais expressoes relacionais e evita os b.o de loop
         if(tokens.get(index).getType() == TokenType.OpBoolE){
             OperadorBooleano();
             TermoRelacional();
@@ -188,7 +174,7 @@ public class SintGyh {
     }
 
     //TermoRelacional → ExpressaoAritmetica OP_REL ExpressaoAritmetica | '(' ExpressaoRelacional ')';
-    public void TermoRelacional(){
+    public void TermoRelacional(){ //funcao que verifica se o termo relacional esta correto
         if(tokens.get(index).getType() == TokenType.AbrePar){
             match(TokenType.AbrePar);
             ExpressaoRelacional();
@@ -205,7 +191,7 @@ public class SintGyh {
     }
 
 
-    private boolean verificaOpRelacional(TokenType type) {
+    private boolean verificaOpRelacional(TokenType type) { //funcao que verifica se o token é um operador relacional pra nao ficar dando erro do termo relacional sem verificacao
         return type == TokenType.OpRelIgual ||
                 type == TokenType.OpRelMaior ||
                 type == TokenType.OpRelMenor ||
@@ -216,7 +202,7 @@ public class SintGyh {
 
     //OperadorBooleano → 'E' | 'OU';
 
-    public void OperadorBooleano(){
+    public void OperadorBooleano(){ //funcao que verifica se o operador booleano esta correto
         if(tokens.get(index).getType() == TokenType.OpBoolE){
             match(TokenType.OpBoolE);
         }else if(tokens.get(index).getType() == TokenType.OpBoolOu){
@@ -225,17 +211,17 @@ public class SintGyh {
     }
 
     //ListaComandos → Comando ListaComandos | Comando;
-    public void ListaComandos() {
+    public void ListaComandos() { //funcao que chama o comando e a lista de comandos
         while (index < tokens.size()) {
             if (tokens.get(index).getType() == TokenType.PCFim) {
-                return; // Finaliza o loop ao encontrar PCFim
+                return; // finaliza o loop ao encontrar PCFim
             }
-            Comando(); // Processa os comandos
+            Comando(); // processa os comandos
         }
     }
 
     //Comando → Atribuicao | Entrada | Saida | Condicao | Repeticao;
-    public void Comando(){
+    public void Comando(){ //funcao que verifica qual comando esta sendo chamado
         switch (tokens.get(index).getType()){
             case Var:
                 Atribuicao();
@@ -262,7 +248,7 @@ public class SintGyh {
 
     //ComandoAtribuicao → VARIAVEL ':=' ExpressaoAritmetica;
 
-    public void Atribuicao(){
+    public void Atribuicao(){  //funcao que verifica se a atribuicao esta correta
         match(TokenType.Var);
         match(TokenType.Atrib);
         ExpressaoAritmetica();
@@ -270,13 +256,13 @@ public class SintGyh {
 
     //ComandoEntrada → 'LER' VARIAVEL;
 
-    public void Entrada(){
+    public void Entrada(){ //funcao que verifica se a entrada esta correta
         match(TokenType.PCLer);
         match(TokenType.Var);
     }
 
     //ComandoSaida → 'IMPRIMIR'  VARIAVEL | 'IMPRIMIR' CADEIA;
-    public void Saida(){
+    public void Saida(){ //funcao que verifica se a saida esta
         match(TokenType.PCImprimir);
         if(tokens.get(index).getType() == TokenType.Var){
             match(TokenType.Var);
@@ -285,7 +271,7 @@ public class SintGyh {
         }
     }
 
-    public void Condicao(){
+    public void Condicao(){ //funcao que chama a expressao relacional e os comandos da condicao
         match(TokenType.PCSe);
         ExpressaoRelacional();
         match(TokenType.PCEntao);
@@ -293,7 +279,7 @@ public class SintGyh {
         ComandoCondicaoCont();
     }
 
-    public void ComandoCondicaoCont(){
+    public void ComandoCondicaoCont(){ //funcao que verifica se tem mais comandos na condicao e evita os b.o de loop
         if(tokens.get(index).getType() == TokenType.PCSenao){
             match(TokenType.PCSenao);
             Comando();
@@ -301,23 +287,23 @@ public class SintGyh {
     }
 
     //ComandoRepeticao → 'ENQTO' ExpressaoRelacional Comando;
-    public void Repeticao(){
+    public void Repeticao(){ //funcao que chama a expressao relacional e o comando da repeticao
         match(TokenType.PCEnqto);
         ExpressaoRelacional();
         Comando();
     }
 
     //SubAlgoritmo → 'INI' ListaComandos 'FIM';
-    public void SubAlgoritmo(){
-        if(index < tokens.size() && match(TokenType.PCIni)) {
-            ListaComandos();
-            if (index < tokens.size() && tokens.get(index).getType() == TokenType.PCFim) {
+    public void SubAlgoritmo(){ //funcao que chama a lista de comandos do subalgoritmo
+        if(index < tokens.size() && match(TokenType.PCIni)) { //verifica se o token atual é PCIni e verifica o proximo token
+            ListaComandos(); //chama a lista de comandos
+            if (index < tokens.size() && tokens.get(index).getType() == TokenType.PCFim) { //verifica se o token atual é PCFim
                 match(TokenType.PCFim);
             } else {
-                throw SintException.expectedToken(TokenType.PCFim, tokens.get(index - 1));
+                throw SintException.expectedToken(TokenType.PCFim, tokens.get(index - 1)); //caso o token atual nao seja PCFim, lança uma exceção
             }
         } else {
-            throw SintException.expectedToken(TokenType.PCIni, tokens.get(index - 1));
+            throw SintException.expectedToken(TokenType.PCIni, tokens.get(index - 1)); //caso o token atual nao seja PCIni, lança uma exceção
         }
     }
 }
