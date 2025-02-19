@@ -1,0 +1,16 @@
+:DEC
+    a:INT
+    b:INT
+:PROG
+    LER a
+    LER b
+    ENQTO a <= 3
+    INI
+        ENQTO b <= 3
+        INI
+            IMPRIMIR a
+            IMPRIMIR b
+            b := b + 1
+        FIM
+        a := a + 1
+    FIM

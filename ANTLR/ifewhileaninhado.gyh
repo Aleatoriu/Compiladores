@@ -1,0 +1,20 @@
+# arquivo de testes
+
+:DEC
+    a:INT
+    b:INT
+:PROG
+    LER a
+    LER b
+    SE a < b ENTAO
+    INI
+        ENQTO a < b
+        INI
+            IMPRIMIR a
+            a := a + 1
+        FIM
+    FIM
+    SENAO
+    INI
+        IMPRIMIR "a nao emenor que b"
+    FIM

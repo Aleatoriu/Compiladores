@@ -1,0 +1,20 @@
+:DEC
+    a:INT
+    resto:INT
+:PROG
+    LER a
+
+    ENQTO a <= 5
+    INI
+        resto := a - (a / 2 * 2)
+        SE resto == 0 ENTAO
+        INI
+            IMPRIMIR "a e par"
+        FIM
+        SENAO
+        INI
+            IMPRIMIR "a e impar"
+        FIM
+        a := a + 1
+    FIM
+
